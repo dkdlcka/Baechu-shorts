@@ -2,6 +2,7 @@
 
   python -m baechu_shorts write   "주제" --character characters/baechu/character.yaml -o examples/x/episode.yaml
   python -m baechu_shorts prompts examples/interview/episode.yaml
+  python -m baechu_shorts generate examples/interview/episode.yaml   # FAL_KEY 필요
   python -m baechu_shorts render  examples/interview/episode.yaml
 """
 from __future__ import annotations
@@ -26,6 +27,12 @@ def main() -> None:
         p.add_argument("episode", type=Path)
         p.add_argument("--out-dir", type=Path, help="기본값: <에피소드 폴더>/output")
 
+    g = sub.add_parser("generate", help="fal.ai로 키프레임/컷 영상 생성 (FAL_KEY 필요)")
+    g.add_argument("episode", type=Path)
+    g.add_argument("--stage", choices=["all", "images", "videos"], default="all")
+    g.add_argument("--scenes", help="일부 컷만: 예) 1,7,11")
+    g.add_argument("--video-model", help="fal 영상 모델 id (기본: Kling 2.5 Turbo Pro)")
+
     a = ap.parse_args()
     if a.cmd == "write":
         from .writer import write_episode
@@ -34,7 +41,13 @@ def main() -> None:
         return
 
     ep = load_episode(a.episode)
-    out_dir = a.out_dir or ep.dir / "output"
+    out_dir = getattr(a, "out_dir", None) or ep.dir / "output"
+    if a.cmd == "generate":
+        from .generate import VIDEO_MODEL, generate
+
+        scenes = [int(x) for x in a.scenes.split(",")] if a.scenes else None
+        generate(ep, a.stage, scenes, a.video_model or VIDEO_MODEL)
+        return
     if a.cmd == "prompts":
         from .prompts import write
 

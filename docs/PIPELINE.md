@@ -53,6 +53,13 @@
 | 컷 영상 | Kling, Veo 3, Hailuo, Runway (i2v) | 키프레임 + `video_prompt` | `shots/scene_XX.mp4` |
 | 립싱크 | Veo 3(대사 직접 생성) 또는 TTS 음성 + 립싱크 도구(Hedra, Kling Lip Sync 등) | 음성 + 컷 영상 | 입 모양 맞춘 컷 |
 
+**자동 생성** — `python -m baechu_shorts generate episode.yaml` (환경 변수 `FAL_KEY`)
+1. `fal-ai/nano-banana/edit`: 배추 사진 → `shots/character_sheet.png` (정장 입은 배추)
+2. 같은 모델: 사진 + 캐릭터 시트 → 컷별 `shots/scene_XX.png` (9:16)
+3. `fal-ai/kling-video/v2.5-turbo/pro/image-to-video`: 키프레임 → `shots/scene_XX.mp4` (5초, 렌더러가 대사 길이에 맞춰 자름)
+- 이미 있는 파일은 건너뛴다 → 마음에 안 드는 컷 파일만 지우고 다시 실행. `--stage images`로 키프레임만 먼저 뽑아 검수 후 `--stage videos` 권장.
+- 한 컷이 실패해도 나머지는 계속 진행, 실패 컷은 사진 폴백으로 렌더된다.
+
 - 화면 밖 화자(면접관)의 컷은 배추가 "듣는" 리액션 컷으로 만든다. 레퍼런스처럼 상대역도 AI 인물로 보여 주려면 voices에서 `offscreen: false`로 두고 해당 컷 키프레임에 인물을 그리면 된다.
 - 프롬프트에 "하단 1/3 비우기"를 넣어 자막 공간을 확보한다.
 
@@ -82,7 +89,8 @@
 | 하고 싶은 것 | 고칠 곳 |
 |---|---|
 | TTS 엔진 교체 | `baechu_shorts/tts.py` `synthesize()` |
-| 이미지/영상 API 자동 호출 | `prompts.json`을 읽어 `shots/`에 저장하는 스크립트 추가 (렌더러는 수정 불필요) |
+| 이미지/영상 모델 교체 | `generate.py`의 `IMAGE_MODEL`/`VIDEO_MODEL` 또는 `--video-model` |
+| 립싱크 | 컷 영상 + TTS 음성 → 립싱크 모델 결과를 `shots/scene_XX.mp4`로 덮어쓰기 |
 | 자막 스타일 | `compose.py` `Overlays` |
 | 새 카메라 무빙 | `episode.MOVES` + `StillSource.frame()` |
 | 새 효과음 | `audio.SFX` |

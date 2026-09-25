@@ -19,6 +19,11 @@ python -m baechu_shorts write "배추의 첫 편의점 알바" -o examples/cvs/e
 # 2) AI 이미지/영상 도구에 넣을 프롬프트 팩
 python -m baechu_shorts prompts examples/interview/episode.yaml
 
+# 2-1) (선택) AI로 키프레임·컷 영상 자동 생성 — FAL_KEY 필요 (fal.ai)
+python -m baechu_shorts generate examples/interview/episode.yaml            # 전체
+python -m baechu_shorts generate examples/interview/episode.yaml --stage images   # 이미지만 먼저 확인
+python -m baechu_shorts generate examples/interview/episode.yaml --scenes 7,11    # 일부 컷만
+
 # 3) 렌더링 → examples/interview/output/
 python -m baechu_shorts render examples/interview/episode.yaml
 ```
@@ -35,6 +40,7 @@ baechu_shorts/
   episode.py            대본 로딩/검증
   writer.py             ① Claude 대본 작성
   prompts.py            ② 이미지·i2v 프롬프트 팩
+  generate.py           ② fal.ai 자동 생성 (nano-banana 키프레임 → Kling i2v)
   tts.py                ③ 음성 합성 (edge-tts)
   audio.py              BGM 합성·효과음·더킹·믹스
   compose.py            ④ 가상 카메라·자막·오버레이·인코딩
