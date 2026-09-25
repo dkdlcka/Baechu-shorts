@@ -1,0 +1,179 @@
+{
+  "character_sheet": {
+    "reference_images": [
+      "/home/user/Baechu-shorts/characters/baechu/ref.jpg"
+    ],
+    "prompt": "Character turnaround sheet of Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. Front, three-quarter and side views, neutral studio background. Keep the exact fur colors, face shape and eyes from the reference photo."
+  },
+  "scenes": [
+    {
+      "file": "shots/scene_00.png",
+      "video_file": "shots/scene_00.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. sitting politely, looking at the camera, slightly nervous. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium-wide shot, full body visible, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. sitting politely, looking at the camera, slightly nervous. slow camera push-in. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "다음 지원자 들어오세요.",
+        "en": "Next applicant, please come in.",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_01.png",
+      "video_file": "shots/scene_01.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. chest out, proud confident smile, tongue slightly out. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium shot from the chest up, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. chest out, proud confident smile, tongue slightly out. quick snap zoom-in at the start, then hold. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "안녕하십니까! 지원자 배추입니다!",
+        "en": "Hello! I'm applicant Baechu!",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_02.png",
+      "video_file": "shots/scene_02.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. listening seriously, head slightly tilted. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium-wide shot, full body visible, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. listening seriously, head slightly tilted. gentle pan to the right. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "우리 회사에 지원한 이유가 뭔가요?",
+        "en": "Why did you apply to our company?",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_03.png",
+      "video_file": "shots/scene_03.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. very serious face, eyes sparkling. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. close-up on the face, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. very serious face, eyes sparkling. slow camera push-in. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "탕비실에 간식이 많다고 들었습니다.",
+        "en": "I heard the break room has lots of snacks.",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_04.png",
+      "video_file": "shots/scene_04.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. blinking innocently. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium shot from the chest up, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. blinking innocently. locked-off static camera. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "...본인의 장점은요?",
+        "en": "...And your strengths?",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_05.png",
+      "video_file": "shots/scene_05.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. sniffing the air proudly, nose up. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. close-up on the face, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. sniffing the air proudly, nose up. gentle pan to the left. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "냄새만 맡아도 간식 위치를 찾아냅니다.",
+        "en": "I can locate any snack just by its smell.",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_06.png",
+      "video_file": "shots/scene_06.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. suddenly guilty look, eyes darting. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium-wide shot, full body visible, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. suddenly guilty look, eyes darting. slow camera push-in. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "그럼 단점은요?",
+        "en": "Then what's your weakness?",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_07.png",
+      "video_file": "shots/scene_07.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. dramatic close-up, guilty but honest face, tongue out. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. extreme close-up on the face filling the frame. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. dramatic close-up, guilty but honest face, tongue out. slight handheld shake, comedic. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "찾으면... 그 자리에서 다 먹습니다.",
+        "en": "Once I find it... I eat it all on the spot.",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_08.png",
+      "video_file": "shots/scene_08.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. sitting up straight, businesslike. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium shot from the chest up, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. sitting up straight, businesslike. slow camera pull-out. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "희망 연봉은요?",
+        "en": "What's your expected salary?",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_09.png",
+      "video_file": "shots/scene_09.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. nodding firmly like a negotiator. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. close-up on the face, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. nodding firmly like a negotiator. slow camera push-in. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "연봉 대신 간식으로 주십시오. 하루 세 번이면 됩니다.",
+        "en": "Pay me in snacks instead. Three times a day will do.",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_10.png",
+      "video_file": "shots/scene_10.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. excited, tail wagging. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium-wide shot, full body visible, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. excited, tail wagging. locked-off static camera. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "마지막으로 하고 싶은 말 있나요?",
+        "en": "Anything else you'd like to say?",
+        "onscreen": false
+      }
+    },
+    {
+      "file": "shots/scene_11.png",
+      "video_file": "shots/scene_11.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. pleading puppy eyes, tongue out, super cute. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. extreme close-up on the face filling the frame. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is speaking to the camera, mouth moving naturally. pleading puppy eyes, tongue out, super cute. quick snap zoom-in at the start, then hold. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "배추",
+        "ko": "합격하면... 지금 산책 가도 됩니까?",
+        "en": "If I pass... can I go for a walk right now?",
+        "onscreen": true
+      }
+    },
+    {
+      "file": "shots/scene_12.png",
+      "video_file": "shots/scene_12.mp4",
+      "image_prompt": "Baechu, a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur, round dark eyes, shiny black button nose, tiny pink tongue often peeking out, compact teddy-bear haircut, wearing a tiny navy business suit with a white shirt and a red necktie, sitting upright on an office chair like a human job applicant. happy open-mouth smile, celebrating. a bright modern Korean corporate interview room, white walls, a long wooden desk, soft window light, shallow depth of field. medium-wide shot, full body visible, eye-level camera. photorealistic, cinematic lighting, 9:16 vertical composition, subject centered in the upper-middle of the frame, leave the lower third clean for subtitles, no text, no watermark",
+      "negative_prompt": "extra legs, extra ears, deformed paws, human hands, text, captions, logo, watermark, blurry face",
+      "video_prompt": "Baechu is listening to an off-screen interviewer, mouth closed. happy open-mouth smile, celebrating. slow camera pull-out. Keep the character identical to the first frame. 3-5 seconds.",
+      "dialogue": {
+        "speaker": "면접관",
+        "ko": "...합격입니다.",
+        "en": "...You're hired.",
+        "onscreen": false
+      }
+    }
+  ]
+}

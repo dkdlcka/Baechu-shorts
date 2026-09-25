@@ -1,0 +1,29 @@
+# 배추 캐릭터 시트 — 모든 에피소드가 공유하는 "고정 자산"
+# AI 이미지/영상 생성 시 매 컷마다 이 설명 + ref 이미지를 함께 넣어 외형 일관성을 유지한다.
+id: baechu
+name_ko: 배추
+name_en: Baechu
+ref_images:
+  - ref.jpg
+
+# 사진 안에서 얼굴이 있는 영역 (0~1 정규화, x0 y0 x1 y1).
+# 로컬 렌더러가 클로즈업/펀치인 기준점으로 사용한다.
+face_box: [0.24, 0.13, 0.76, 0.48]
+body_center: [0.50, 0.58]
+
+# 이미지 생성 프롬프트에 그대로 들어가는 외형 묘사 (영어가 생성 모델에 더 잘 먹힌다)
+appearance: >-
+  a small toy poodle with a fluffy silver-grey head and ears, bright white curly body fur,
+  round dark eyes, shiny black button nose, tiny pink tongue often peeking out,
+  compact teddy-bear haircut
+
+# 성격/말투 — 대본 작가(Claude)에게 전달
+personality: >-
+  자신감 넘치고 당당하지만 간식과 산책 앞에서는 바로 무너지는 허당.
+  말끝은 군대/신입사원식 "~습니다!" 체. 진지한 얼굴로 엉뚱한 소리를 한다.
+
+voice:
+  engine: edge-tts
+  voice: ko-KR-SunHiNeural
+  rate: "+6%"
+  pitch: "+40Hz"

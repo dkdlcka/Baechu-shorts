@@ -1,0 +1,64 @@
+1
+00:00:00,000 --> 00:00:01,981
+(면접관) 다음 지원자 들어오세요.
+Next applicant, please come in.
+
+2
+00:00:01,981 --> 00:00:05,593
+안녕하십니까! 지원자 배추입니다!
+Hello! I'm applicant Baechu!
+
+3
+00:00:05,593 --> 00:00:08,352
+(면접관) 우리 회사에 지원한 이유가 뭔가요?
+Why did you apply to our company?
+
+4
+00:00:08,352 --> 00:00:11,031
+탕비실에 간식이 많다고 들었습니다.
+I heard the break room has lots of snacks.
+
+5
+00:00:11,031 --> 00:00:12,729
+(면접관) ...본인의 장점은요?
+...And your strengths?
+
+6
+00:00:12,729 --> 00:00:15,693
+냄새만 맡아도 간식 위치를 찾아냅니다.
+I can locate any snack just by its smell.
+
+7
+00:00:15,693 --> 00:00:17,238
+(면접관) 그럼 단점은요?
+Then what's your weakness?
+
+8
+00:00:17,238 --> 00:00:20,670
+찾으면... 그 자리에서 다 먹습니다.
+Once I find it... I eat it all on the spot.
+
+9
+00:00:20,670 --> 00:00:22,092
+(면접관) 희망 연봉은요?
+What's your expected salary?
+
+10
+00:00:22,092 --> 00:00:26,048
+연봉 대신 간식으로 주십시오. 하루 세 번이면 됩니다.
+Pay me in snacks instead. Three times a day will do.
+
+11
+00:00:26,048 --> 00:00:28,511
+(면접관) 마지막으로 하고 싶은 말 있나요?
+Anything else you'd like to say?
+
+12
+00:00:28,511 --> 00:00:31,976
+합격하면... 지금 산책 가도 됩니까?
+If I pass... can I go for a walk right now?
+
+13
+00:00:31,976 --> 00:00:34,311
+(면접관) ...합격입니다.
+...You're hired.

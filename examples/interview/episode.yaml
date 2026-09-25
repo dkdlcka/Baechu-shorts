@@ -1,0 +1,133 @@
+# 에피소드 대본 = 파이프라인의 단일 입력(Single Source of Truth)
+# `python -m baechu_shorts write` 로 Claude가 생성하거나, 직접 작성/수정한다.
+title: "면접 보는 배추 😎"
+top_title: "프로 신입 배추의 첫 면접"
+watermark: "배추 BAECHU"
+character: ../../characters/baechu/character.yaml
+
+description: |
+  배추 씨는 오늘 첫 면접이래
+  자신감은 이미 합격인데😮
+  대답도 합격일까?
+hashtags: ["#배추", "#토이푸들", "#강아지", "#강아지쇼츠", "#면접", "#신입사원", "#shorts"]
+
+# AI 생성 모드에서 모든 컷에 공통으로 붙는 배경/의상 설정
+setting: >-
+  a bright modern Korean corporate interview room, white walls, a long wooden desk,
+  soft window light, shallow depth of field
+wardrobe: >-
+  wearing a tiny navy business suit with a white shirt and a red necktie,
+  sitting upright on an office chair like a human job applicant
+
+voices:
+  baechu:
+    from_character: true
+  interviewer:
+    label: 면접관
+    offscreen: true            # 화면에 안 나오는 목소리 → 자막에 이름표를 붙인다
+    voice: ko-KR-InJoonNeural
+    rate: "-4%"
+    pitch: "-6Hz"
+
+audio:
+  bgm: synth                   # synth | 파일 경로 | none
+  bgm_volume: 0.12
+
+# shot: wide | medium | close | extreme_close
+# move: push_in | pull_out | pan_left | pan_right | punch | shake | static
+scenes:
+  - speaker: interviewer
+    ko: 다음 지원자 들어오세요.
+    en: Next applicant, please come in.
+    shot: wide
+    move: push_in
+    expression: sitting politely, looking at the camera, slightly nervous
+
+  - speaker: baechu
+    ko: 안녕하십니까! 지원자 배추입니다!
+    en: Hello! I'm applicant Baechu!
+    shot: medium
+    move: punch
+    expression: chest out, proud confident smile, tongue slightly out
+    sfx: pop
+
+  - speaker: interviewer
+    ko: 우리 회사에 지원한 이유가 뭔가요?
+    en: Why did you apply to our company?
+    shot: wide
+    move: pan_right
+    expression: listening seriously, head slightly tilted
+
+  - speaker: baechu
+    ko: 탕비실에 간식이 많다고 들었습니다.
+    en: I heard the break room has lots of snacks.
+    shot: close
+    move: push_in
+    expression: very serious face, eyes sparkling
+
+  - speaker: interviewer
+    ko: ...본인의 장점은요?
+    en: ...And your strengths?
+    shot: medium
+    move: static
+    expression: blinking innocently
+
+  - speaker: baechu
+    ko: 냄새만 맡아도 간식 위치를 찾아냅니다.
+    en: I can locate any snack just by its smell.
+    shot: close
+    move: pan_left
+    expression: sniffing the air proudly, nose up
+
+  - speaker: interviewer
+    ko: 그럼 단점은요?
+    en: Then what's your weakness?
+    shot: wide
+    move: push_in
+    expression: suddenly guilty look, eyes darting
+
+  - speaker: baechu
+    ko: 찾으면... 그 자리에서 다 먹습니다.
+    en: Once I find it... I eat it all on the spot.
+    shot: extreme_close
+    move: shake
+    expression: dramatic close-up, guilty but honest face, tongue out
+    sfx: pop
+
+  - speaker: interviewer
+    ko: 희망 연봉은요?
+    en: What's your expected salary?
+    shot: medium
+    move: pull_out
+    expression: sitting up straight, businesslike
+
+  - speaker: baechu
+    ko: 연봉 대신 간식으로 주십시오. 하루 세 번이면 됩니다.
+    en: Pay me in snacks instead. Three times a day will do.
+    shot: close
+    move: push_in
+    expression: nodding firmly like a negotiator
+
+  - speaker: interviewer
+    ko: 마지막으로 하고 싶은 말 있나요?
+    en: Anything else you'd like to say?
+    shot: wide
+    move: static
+    expression: excited, tail wagging
+
+  - speaker: baechu
+    ko: 합격하면... 지금 산책 가도 됩니까?
+    en: If I pass... can I go for a walk right now?
+    shot: extreme_close
+    move: punch
+    expression: pleading puppy eyes, tongue out, super cute
+
+  - speaker: interviewer
+    ko: ...합격입니다.
+    en: ...You're hired.
+    shot: wide
+    move: pull_out
+    expression: happy open-mouth smile, celebrating
+    stamp: 합격
+    sfx: pop
+    hold: 1.4
