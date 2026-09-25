@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+import yaml
 from PIL import Image, ImageDraw, ImageFilter
 
 from . import audio as audio_mod
@@ -197,12 +198,13 @@ class StillSource:
 
     UPSCALE = 2  # 저해상도 사진도 클로즈업에서 덜 뭉개지도록 미리 업스케일+샤픈
 
-    def __init__(self, path: Path, face_box, body_center, zoom_scale: float = 1.0):
+    def __init__(self, path: Path, face_box, body_center, zoom_scale: float = 1.0, mouth=None):
         self.zoom_scale = zoom_scale
         src = Image.open(path).convert("RGB")
         self.img = src.resize((src.width * self.UPSCALE, src.height * self.UPSCALE), Image.LANCZOS)
         self.img = self.img.filter(ImageFilter.UnsharpMask(radius=2, percent=80, threshold=2))
         self._setup(self.img.size, face_box, body_center)
+        self.jaw = Jaw(self.img, mouth) if mouth else None
 
     def _setup(self, size, face_box, body_center):
         self.w, self.h = size
@@ -216,7 +218,10 @@ class StillSource:
             self.base = (self.w, self.w * H / W)
 
     def frame(self, cut: Cut, t: float, env: float, talking: bool, seed: int) -> Image.Image:
-        return self.img.resize((W, H), Image.BILINEAR, box=self.camera_box(cut, t, env, talking, seed))
+        img = self.img
+        if self.jaw and cut.scene.lipsync:
+            img = self.jaw.apply(env)
+        return img.resize((W, H), Image.BILINEAR, box=self.camera_box(cut, t, env, talking, seed))
 
     def camera_box(self, cut: Cut, t: float, env: float, talking: bool, seed: int):
         s = cut.scene
@@ -254,6 +259,67 @@ class StillSource:
         x0 = min(max(cx + dx - cw / 2, 0), self.w - cw)
         y0 = min(max(cy + dy - ch / 2, 0), self.h - ch)
         return (x0, y0, x0 + cw, y0 + ch)
+
+
+class Jaw:
+    """정지 이미지 립싱크: 입술 선을 기준으로 아래턱은 크게, 윗입술은 조금 벌리고
+    벌어진 틈은 입안(위는 어둡고 아래는 혀 색) 그라데이션으로 채운다."""
+
+    DARK = np.array([45, 12, 18], np.float32)
+    TONGUE = np.array([170, 70, 85], np.float32)
+    UP = 0.25  # 벌어짐 중 윗입술이 올라가는 비율
+
+    def __init__(self, img: Image.Image, mouth):
+        mx, my, mw = mouth
+        W_, H_ = img.size
+        self.base = np.asarray(img).astype(np.float32)
+        self.H = H_
+        self.mx, self.my, self.mw = mx * W_, my * H_, mw * W_
+        self.x0 = int(max(0, self.mx - 1.2 * self.mw))
+        self.x1 = int(min(W_, self.mx + 1.2 * self.mw))
+        self.jaw_h, self.lip_h = 1.6 * self.mw, 0.5 * self.mw
+        self.y0 = int(max(0, self.my - self.lip_h))
+        self.y1 = int(min(H_, self.my + self.jaw_h + 2))
+        xs = np.arange(self.x0, self.x1, dtype=np.float32)
+        ys = np.arange(self.y0, self.y1, dtype=np.float32)
+        gx = np.exp(-(((xs - self.mx) / (0.38 * self.mw)) ** 2))[None, :]  # 가운데가 가장 크게 벌어짐
+        below = ys[:, None] >= self.my
+        fall = np.where(below, np.clip(1 - (ys[:, None] - self.my) / self.jaw_h, 0, 1),
+                        np.clip(1 - (self.my - ys[:, None]) / self.lip_h, 0, 1))
+        self.shape = gx * fall            # 위치별 이동 비율
+        self.below = below
+        self.yy = ys[:, None].repeat(len(xs), 1)
+        self.xx = np.arange(len(xs))[None, :].repeat(len(ys), 0)
+        self._cache: dict[int, Image.Image] = {}
+
+    def apply(self, env: float) -> Image.Image:
+        opening = float(np.clip((env - 0.10) / 0.55, 0, 1))
+        level = int(round(opening * 12))  # 13단계로 양자화해서 캐시
+        if level not in self._cache:
+            if level == 0:
+                out = self.base
+            else:
+                a = 0.36 * self.mw * level / 12
+                d_dn = (1 - self.UP) * a * self.shape
+                d_up = self.UP * a * self.shape
+                sy = np.where(self.below, self.yy - d_dn, self.yy + d_up)
+                src = self.base[:, self.x0:self.x1]
+                lo = np.clip(np.floor(sy).astype(int), 0, self.H - 1)
+                hi = np.clip(lo + 1, 0, self.H - 1)
+                f = (sy - np.floor(sy))[..., None]
+                warped = src[lo, self.xx] * (1 - f) + src[hi, self.xx] * f
+                # 입술 선을 넘어서 끌어온 픽셀 = 벌어진 입 안
+                cross = np.where(self.below, self.my - sy, sy - self.my)
+                gap = (d_dn + d_up)[..., None]
+                inside = np.clip(cross[..., None] / 1.5, 0, 1) * np.clip(gap - 1.0, 0, 1)
+                # 아래쪽(혀)일수록 분홍, 위쪽일수록 어둡게
+                depth = np.where(self.below, np.clip((self.yy - self.my) / np.maximum(d_dn, 1e-3), 0, 1), 0.0)[..., None]
+                color = self.DARK * (1 - depth * 0.8) + self.TONGUE * (depth * 0.8)
+                warped = warped * (1 - inside) + color * inside
+                out = self.base.copy()
+                out[self.y0:self.y1, self.x0:self.x1] = warped
+            self._cache[level] = Image.fromarray(out.astype(np.uint8))
+        return self._cache[level]
 
 
 class VideoSource(StillSource):
@@ -294,7 +360,9 @@ def pick_source(ep: Episode, s: Scene, cache: dict):
     kf = keyframe_path(ep, s)
     if kf.exists():
         if kf not in cache:
-            cache[kf] = StillSource(kf, AI_FACE_BOX, AI_BODY, AI_ZOOM)
+            mouths_file = shots / "mouths.yaml"
+            mouths = yaml.safe_load(mouths_file.read_text()) if mouths_file.exists() else {}
+            cache[kf] = StillSource(kf, AI_FACE_BOX, AI_BODY, AI_ZOOM, mouth=(mouths or {}).get(kf.stem))
         return cache[kf]
     for ext in (".jpg", ".jpeg", ".webp"):
         p = shots / f"scene_{s.index:02d}{ext}"

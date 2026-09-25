@@ -159,5 +159,6 @@ scenes:
     reuse: scene_01
     video_prompt: "The overjoyed poodle in a suit celebrates, bouncing happily with paws in the air, static camera"
     stamp: 합격
+    lipsync: false             # 면접관 대사인데 화면엔 배추가 나오므로 입 고정
     sfx: pop
     hold: 1.4
