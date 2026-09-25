@@ -37,7 +37,7 @@ class Scene:
     edit: str | None = None        # base 이미지에 적용할 편집 지시문 (영어)
     reuse: str | None = None       # 다른 컷의 키프레임을 그대로 재사용 (예: "scene_00")
     video_prompt: str | None = None  # 이미지→영상 프롬프트 직접 지정
-    lipsync: bool = True           # 키프레임에 입 위치가 있으면 대사에 맞춰 입을 움직임
+    lipsync: bool = False          # (실험) 키프레임 입을 음량에 맞춰 벌림. 부자연스러워 기본은 끔
 
 
 @dataclass
