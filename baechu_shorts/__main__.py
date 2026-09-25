@@ -2,7 +2,7 @@
 
   python -m baechu_shorts write   "주제" --character characters/baechu/character.yaml -o examples/x/episode.yaml
   python -m baechu_shorts prompts examples/interview/episode.yaml
-  python -m baechu_shorts generate examples/interview/episode.yaml   # FAL_KEY 필요
+  python -m baechu_shorts generate examples/interview/episode.yaml   # 무료: HF_TOKEN / 유료: --provider fal + FAL_KEY
   python -m baechu_shorts render  examples/interview/episode.yaml
 """
 from __future__ import annotations
@@ -27,7 +27,8 @@ def main() -> None:
         p.add_argument("episode", type=Path)
         p.add_argument("--out-dir", type=Path, help="기본값: <에피소드 폴더>/output")
 
-    g = sub.add_parser("generate", help="fal.ai로 키프레임/컷 영상 생성 (FAL_KEY 필요)")
+    g = sub.add_parser("generate", help="AI로 키프레임/컷 영상 생성 (hf: 무료 HF_TOKEN, fal: 유료 FAL_KEY)")
+    g.add_argument("--provider", choices=["hf", "fal"], default="hf")
     g.add_argument("episode", type=Path)
     g.add_argument("--stage", choices=["all", "images", "videos"], default="all")
     g.add_argument("--scenes", help="일부 컷만: 예) 1,7,11")
@@ -43,10 +44,13 @@ def main() -> None:
     ep = load_episode(a.episode)
     out_dir = getattr(a, "out_dir", None) or ep.dir / "output"
     if a.cmd == "generate":
-        from .generate import VIDEO_MODEL, generate
+        from .generate import VIDEO_MODEL, generate, generate_hf
 
         scenes = [int(x) for x in a.scenes.split(",")] if a.scenes else None
-        generate(ep, a.stage, scenes, a.video_model or VIDEO_MODEL)
+        if a.provider == "hf":
+            generate_hf(ep, a.stage, scenes)
+        else:
+            generate(ep, a.stage, scenes, a.video_model or VIDEO_MODEL)
         return
     if a.cmd == "prompts":
         from .prompts import write

@@ -1,7 +1,10 @@
-"""② AI 생성 단계: fal.ai 하나의 키(FAL_KEY)로 캐릭터 시트 → 컷 키프레임 → 컷 영상까지 자동 생성.
+"""② AI 생성 단계: 컷 키프레임 → 컷 영상 자동 생성. 두 가지 제공자:
 
-  이미지: fal-ai/nano-banana/edit   (레퍼런스 사진을 넣어 같은 강아지로 편집/생성)
-  영상:   fal-ai/kling-video/v2.5-turbo/pro/image-to-video (키프레임 → 5초 영상)
+  --provider hf  (무료) Hugging Face ZeroGPU Spaces, HF_TOKEN 필요(무료 계정 하루 GPU 5분)
+      이미지: black-forest-labs/FLUX.1-Kontext-Dev  (배추 사진을 직접 편집 → 같은 강아지 유지)
+      영상:   zerogpu-aoti/wan2-2-fp8da-aoti-faster (Wan 2.2 이미지→영상)
+  --provider fal (유료, 고품질) FAL_KEY 필요
+      이미지: fal-ai/nano-banana/edit, 영상: fal-ai/kling-video/v2.5-turbo/pro/image-to-video
 
 결과는 <에피소드>/shots/ 에 저장되고, 이미 있는 파일은 건너뛴다(마음에 안 드는 컷만 지우고 다시 실행).
 렌더러는 shots/scene_XX.mp4 → .png → 원본 사진 순으로 컷 소스를 고른다.
@@ -89,6 +92,70 @@ def _video(prompt: str, frame: Path, dest: Path, label: str, model: str) -> Path
     return download(out["video"]["url"], dest)
 
 
+# ---------------------------------------------------------------- Hugging Face (무료)
+HF_IMAGE_SPACE = "black-forest-labs/FLUX.1-Kontext-Dev"
+HF_VIDEO_SPACE = "zerogpu-aoti/wan2-2-fp8da-aoti-faster"
+HF_NEGATIVE = "static, blurry, low quality, subtitles, text, deformed face, extra legs, extra paws, human hands"
+
+
+def _hf_client(space: str):
+    from gradio_client import Client
+
+    token = os.environ.get("HF_TOKEN")
+    if not token:
+        raise SystemExit("HF_TOKEN 환경 변수가 없습니다. huggingface.co/settings/tokens 에서 무료 토큰(Read)을 만드세요.")
+    try:
+        return Client(space, token=token, verbose=False)
+    except TypeError:  # 구버전 gradio_client
+        return Client(space, hf_token=token, verbose=False)
+
+
+def _hf_copy(result, dest: Path) -> Path:
+    src = result.get("path") if isinstance(result, dict) else result
+    if isinstance(src, dict):  # Video 출력은 {"video": path} 형태일 수 있음
+        src = src.get("video") or src.get("path")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.suffix == ".png":
+        Image.open(src).convert("RGB").save(dest)
+    else:
+        dest.write_bytes(Path(src).read_bytes())
+    return dest
+
+
+def generate_hf(ep: Episode, stage: str, scenes: list[int] | None) -> None:
+    """무료 경로. ZeroGPU 할당량을 아끼려고 순차 실행하고, 할당량이 바닥나면 멈춘다(내일 이어서 실행)."""
+    from gradio_client import handle_file
+
+    pack = build(ep)
+    ref = ep.character.ref_images[0]
+    todo = [i for i in range(len(pack["scenes"])) if scenes is None or i in scenes]
+    img_client = vid_client = None
+    for i in todo:
+        sc = pack["scenes"][i]
+        png, mp4 = ep.dir / sc["file"], ep.dir / sc["video_file"]
+        try:
+            if stage in ("all", "images") and not png.exists():
+                img_client = img_client or _hf_client(HF_IMAGE_SPACE)
+                prompt = (f"Keep this exact dog (same fur colors, face, eyes and ears). Make it {ep.wardrobe}. "
+                          f"{ep.scenes[i].expression}. Background: {ep.setting}. "
+                          f"Photorealistic photo.")
+                res, _ = img_client.predict(handle_file(str(ref)), prompt, 0, True, 2.5, 28, api_name="/infer")
+                _hf_copy(res, png)
+            if stage in ("all", "videos") and png.exists() and not mp4.exists():
+                vid_client = vid_client or _hf_client(HF_VIDEO_SPACE)
+                res, _ = vid_client.predict(handle_file(str(png)), sc["video_prompt"], 6, HF_NEGATIVE, 3.5,
+                                            1, 1, 42, True, api_name="/generate_video")
+                _hf_copy(res, mp4)
+            print(f"[generate:hf] scene_{i:02d}: {'mp4' if mp4.exists() else 'png' if png.exists() else '-'}")
+        except Exception as e:
+            msg = str(e)
+            print(f"[generate:hf] scene_{i:02d} 실패: {msg}")
+            if "quota" in msg.lower() or "limit" in msg.lower():
+                print("[generate:hf] 오늘 GPU 할당량 소진 → 24시간 뒤 같은 명령을 다시 실행하면 남은 컷부터 이어서 만듭니다.")
+                return
+
+
+# ---------------------------------------------------------------- fal.ai (유료)
 def generate(ep: Episode, stage: str = "all", scenes: list[int] | None = None,
              video_model: str = VIDEO_MODEL, workers: int = 4) -> None:
     pack = build(ep)

@@ -89,6 +89,7 @@
 | 하고 싶은 것 | 고칠 곳 |
 |---|---|
 | TTS 엔진 교체 | `baechu_shorts/tts.py` `synthesize()` |
+| 무료 생성 (HF Spaces) | `generate --provider hf` + `HF_TOKEN` (무료 계정 하루 GPU 5분, 다음 날 이어서 실행) |
 | 이미지/영상 모델 교체 | `generate.py`의 `IMAGE_MODEL`/`VIDEO_MODEL` 또는 `--video-model` |
 | 립싱크 | 컷 영상 + TTS 음성 → 립싱크 모델 결과를 `shots/scene_XX.mp4`로 덮어쓰기 |
 | 자막 스타일 | `compose.py` `Overlays` |
