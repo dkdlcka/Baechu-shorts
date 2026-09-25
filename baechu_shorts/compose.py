@@ -18,7 +18,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 from . import audio as audio_mod
-from .episode import Episode, Scene
+from .episode import Episode, Scene, keyframe_path
 from .tools import ffmpeg, font
 from .tts import SR, synthesize
 
@@ -197,11 +197,15 @@ class StillSource:
 
     UPSCALE = 2  # 저해상도 사진도 클로즈업에서 덜 뭉개지도록 미리 업스케일+샤픈
 
-    def __init__(self, path: Path, face_box, body_center):
+    def __init__(self, path: Path, face_box, body_center, zoom_scale: float = 1.0):
+        self.zoom_scale = zoom_scale
         src = Image.open(path).convert("RGB")
         self.img = src.resize((src.width * self.UPSCALE, src.height * self.UPSCALE), Image.LANCZOS)
         self.img = self.img.filter(ImageFilter.UnsharpMask(radius=2, percent=80, threshold=2))
-        self.w, self.h = self.img.size
+        self._setup(self.img.size, face_box, body_center)
+
+    def _setup(self, size, face_box, body_center):
+        self.w, self.h = size
         fx0, fy0, fx1, fy1 = face_box
         self.face = ((fx0 + fx1) / 2 * self.w, (fy0 + fy1) / 2 * self.h)
         self.body = (body_center[0] * self.w, body_center[1] * self.h)
@@ -212,9 +216,12 @@ class StillSource:
             self.base = (self.w, self.w * H / W)
 
     def frame(self, cut: Cut, t: float, env: float, talking: bool, seed: int) -> Image.Image:
+        return self.img.resize((W, H), Image.BILINEAR, box=self.camera_box(cut, t, env, talking, seed))
+
+    def camera_box(self, cut: Cut, t: float, env: float, talking: bool, seed: int):
         s = cut.scene
         p = _ease(min(1.0, t / max(cut.duration, 1e-3)))
-        zoom = SHOT_ZOOM[s.shot]
+        zoom = 1 + (SHOT_ZOOM[s.shot] - 1) * self.zoom_scale
         # 샷이 좁을수록 얼굴 쪽으로 초점 이동
         k = {"wide": 0.0, "medium": 0.55, "close": 1.0, "extreme_close": 1.0}[s.shot]
         cx = self.body[0] + (self.face[0] - self.body[0]) * k
@@ -246,24 +253,36 @@ class StillSource:
         cy += (0.5 - FACE_Y) * ch * k
         x0 = min(max(cx + dx - cw / 2, 0), self.w - cw)
         y0 = min(max(cy + dy - ch / 2, 0), self.h - ch)
-        return self.img.resize((W, H), Image.BILINEAR, box=(x0, y0, x0 + cw, y0 + ch))
+        return (x0, y0, x0 + cw, y0 + ch)
 
 
-class VideoSource:
-    """AI가 만든 컷 영상. 9:16 커버로 맞추고, 짧으면 마지막 프레임 유지."""
+class VideoSource(StillSource):
+    """AI가 만든 컷 영상. 정지 컷과 같은 가상 카메라(샷/무빙)를 입히고,
+    대사보다 짧으면 앞뒤로 왕복 재생(핑퐁)해서 멈춘 화면이 생기지 않게 한다."""
 
-    def __init__(self, path: Path):
-        raw = subprocess.run(
-            [ffmpeg(), "-v", "error", "-i", str(path), "-vf",
-             f"fps={FPS},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}",
-             "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
-            check=True, capture_output=True,
-        ).stdout
-        self.frames = np.frombuffer(raw, np.uint8).reshape(-1, H, W, 3)
+    def __init__(self, path: Path, face_box, body_center, zoom_scale: float = 1.0):
+        import imageio_ffmpeg
+
+        self.zoom_scale = zoom_scale
+        gen = imageio_ffmpeg.read_frames(str(path), output_params=["-vf", f"fps={FPS}"])
+        meta = next(gen)
+        w, h = meta["size"]
+        self.frames = [np.frombuffer(f, np.uint8).reshape(h, w, 3) for f in gen]
+        self._setup((w, h), face_box, body_center)
 
     def frame(self, cut: Cut, t: float, env: float, talking: bool, seed: int) -> Image.Image:
-        i = min(int(t * FPS), len(self.frames) - 1)
-        return Image.fromarray(self.frames[i])
+        n = len(self.frames)
+        period = max(1, 2 * n - 2)
+        i = int(t * FPS) % period
+        i = i if i < n else period - i
+        img = Image.fromarray(self.frames[i])
+        # 영상 자체가 움직이므로 음량 들썩임은 끔
+        out = img.resize((W, H), Image.BICUBIC, box=self.camera_box(cut, t, 0.0, False, seed))
+        return out.filter(ImageFilter.UnsharpMask(radius=2, percent=60, threshold=2))
+
+
+AI_FACE_BOX, AI_BODY = (0.3, 0.14, 0.7, 0.46), (0.5, 0.55)  # AI 키프레임: 캐릭터가 가운데 있다고 가정
+AI_ZOOM = 0.6  # AI 키프레임은 머리가 크게 나와서 클로즈업을 덜 조인다
 
 
 def pick_source(ep: Episode, s: Scene, cache: dict):
@@ -271,8 +290,13 @@ def pick_source(ep: Episode, s: Scene, cache: dict):
     for ext in (".mp4", ".mov", ".webm"):
         p = shots / f"scene_{s.index:02d}{ext}"
         if p.exists():
-            return VideoSource(p)
-    for ext in (".png", ".jpg", ".jpeg", ".webp"):
+            return VideoSource(p, AI_FACE_BOX, AI_BODY, AI_ZOOM)
+    kf = keyframe_path(ep, s)
+    if kf.exists():
+        if kf not in cache:
+            cache[kf] = StillSource(kf, AI_FACE_BOX, AI_BODY, AI_ZOOM)
+        return cache[kf]
+    for ext in (".jpg", ".jpeg", ".webp"):
         p = shots / f"scene_{s.index:02d}{ext}"
         if p.exists():
             # AI 키프레임은 캐릭터가 대략 가운데 있다고 가정

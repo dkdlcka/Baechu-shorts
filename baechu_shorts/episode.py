@@ -32,6 +32,11 @@ class Scene:
     sfx: str | None = None
     stamp: str | None = None
     hold: float = 0.35  # 대사 끝난 뒤 여유 시간(초)
+    # --- AI 생성 옵션 (할당량 절약 + 컷 간 일관성) ---
+    base: str | None = None        # 이 컷 키프레임을 만들 때 편집할 원본 (예: "scene_01"). 없으면 캐릭터 사진
+    edit: str | None = None        # base 이미지에 적용할 편집 지시문 (영어)
+    reuse: str | None = None       # 다른 컷의 키프레임을 그대로 재사용 (예: "scene_00")
+    video_prompt: str | None = None  # 이미지→영상 프롬프트 직접 지정
 
 
 @dataclass
@@ -65,6 +70,11 @@ class Episode:
     @property
     def dir(self) -> Path:
         return self.path.parent
+
+
+def keyframe_path(ep: "Episode", s: Scene) -> Path:
+    """이 컷이 쓰는 키프레임 이미지 경로 (재사용 컷이면 원본 컷의 것)."""
+    return ep.dir / "shots" / f"{s.reuse or f'scene_{s.index:02d}'}.png"
 
 
 def load_character(path: Path) -> Character:

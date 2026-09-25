@@ -54,8 +54,8 @@ def build(ep: Episode) -> dict:
             "image_prompt": (f"{identity}, {ep.wardrobe}. {s.expression}. {ep.setting}. "
                              f"{SHOT_TEXT[s.shot]}. {STYLE}"),
             "negative_prompt": NEGATIVE,
-            "video_prompt": (f"{action}. {s.expression}. {MOVE_TEXT[s.move]}. Keep the character identical "
-                             f"to the first frame. 3-5 seconds."),
+            "video_prompt": s.video_prompt or (f"{action}. {s.expression}. {MOVE_TEXT[s.move]}. Keep the character "
+                                               f"identical to the first frame. 3-5 seconds."),
             # Veo 3처럼 음성까지 만드는 모델이면 대사를 그대로 넣고, 아니면 TTS 음성으로 립싱크
             "dialogue": {"speaker": v.label, "ko": s.ko, "en": s.en, "onscreen": speaking},
         })

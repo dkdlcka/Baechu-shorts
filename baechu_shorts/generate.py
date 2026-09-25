@@ -2,7 +2,7 @@
 
   --provider hf  (무료) Hugging Face ZeroGPU Spaces, HF_TOKEN 필요(무료 계정 하루 GPU 5분)
       이미지: black-forest-labs/FLUX.1-Kontext-Dev  (배추 사진을 직접 편집 → 같은 강아지 유지)
-      영상:   zerogpu-aoti/wan2-2-fp8da-aoti-faster (Wan 2.2 이미지→영상)
+      영상:   Lightricks/ltx-video-distilled (LTX-Video 이미지→영상)
   --provider fal (유료, 고품질) FAL_KEY 필요
       이미지: fal-ai/nano-banana/edit, 영상: fal-ai/kling-video/v2.5-turbo/pro/image-to-video
 
@@ -22,7 +22,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from .episode import Episode
+from .episode import Episode, keyframe_path
 from .prompts import build
 
 QUEUE = os.environ.get("FAL_QUEUE_URL", "https://queue.fal.run")
@@ -94,8 +94,10 @@ def _video(prompt: str, frame: Path, dest: Path, label: str, model: str) -> Path
 
 # ---------------------------------------------------------------- Hugging Face (무료)
 HF_IMAGE_SPACE = "black-forest-labs/FLUX.1-Kontext-Dev"
-HF_VIDEO_SPACE = "zerogpu-aoti/wan2-2-fp8da-aoti-faster"
-HF_NEGATIVE = "static, blurry, low quality, subtitles, text, deformed face, extra legs, extra paws, human hands"
+HF_VIDEO_SPACE = "Lightricks/ltx-video-distilled"
+HF_NEGATIVE = "worst quality, inconsistent motion, blurry, jittery, distorted, deformed face, extra legs, text"
+KEEP = ("Keep the dog's identity exactly (same fur colors, face, eyes and ears), and keep the suit, "
+        "the pose and the room unchanged unless stated. Photorealistic photo.")
 
 
 def _hf_client(space: str):
@@ -122,37 +124,76 @@ def _hf_copy(result, dest: Path) -> Path:
     return dest
 
 
+def _hf_dims(png: Path, long_side: int = 1024) -> tuple[int, int]:
+    """세로 영상용 (height, width), 32의 배수."""
+    w, h = Image.open(png).size
+    hh = long_side
+    ww = int(round(long_side * w / h / 32) * 32)
+    return hh, ww
+
+
 def generate_hf(ep: Episode, stage: str, scenes: list[int] | None) -> None:
-    """무료 경로. ZeroGPU 할당량을 아끼려고 순차 실행하고, 할당량이 바닥나면 멈춘다(내일 이어서 실행)."""
+    """무료 경로. ZeroGPU 할당량을 아끼려고 순차 실행하고, 할당량이 바닥나면 멈춘다(다음 날 이어서 실행).
+
+    키프레임: base 컷 이미지(없으면 캐릭터 사진)를 FLUX Kontext로 편집 → 의상/배경이 컷끼리 일관됨.
+    reuse 컷은 키프레임을 새로 만들지 않고 다른 컷의 것을 쓴다(영상은 컷마다 따로 생성).
+    """
     from gradio_client import handle_file
 
     pack = build(ep)
     ref = ep.character.ref_images[0]
-    todo = [i for i in range(len(pack["scenes"])) if scenes is None or i in scenes]
+    shots = ep.dir / "shots"
+    # --scenes로 준 순서대로 처리 (할당량이 모자랄 때 중요한 컷부터)
+    todo = ep.scenes if scenes is None else [ep.scenes[i] for i in scenes]
     img_client = vid_client = None
-    for i in todo:
-        sc = pack["scenes"][i]
-        png, mp4 = ep.dir / sc["file"], ep.dir / sc["video_file"]
-        try:
-            if stage in ("all", "images") and not png.exists():
+
+    def quota_hit(msg: str) -> bool:
+        if "quota" in msg.lower() or "runs limit" in msg.lower():
+            print("[generate:hf] 오늘 GPU 할당량 소진 → 24시간 뒤 같은 명령을 다시 실행하면 남은 컷부터 이어서 만듭니다.")
+            return True
+        return False
+
+    # base가 없는 컷부터 (다른 컷의 편집 원본이 되므로)
+    if stage in ("all", "images"):
+        for s in sorted(todo, key=lambda s: s.base is not None):
+            png = keyframe_path(ep, s)
+            if s.reuse or png.exists():
+                continue
+            src = shots / f"{s.base}.png" if s.base else ref
+            if not src.exists():
+                print(f"[generate:hf] scene_{s.index:02d}: 원본 {src.name} 없음 → 건너뜀")
+                continue
+            prompt = f"{s.edit} {KEEP}" if s.edit else (
+                f"Keep this exact dog (same fur colors, face, eyes and ears). Make it {ep.wardrobe}. "
+                f"{s.expression}. Background: {ep.setting}. Photorealistic photo.")
+            try:
                 img_client = img_client or _hf_client(HF_IMAGE_SPACE)
-                prompt = (f"Keep this exact dog (same fur colors, face, eyes and ears). Make it {ep.wardrobe}. "
-                          f"{ep.scenes[i].expression}. Background: {ep.setting}. "
-                          f"Photorealistic photo.")
-                res, _ = img_client.predict(handle_file(str(ref)), prompt, 0, True, 2.5, 28, api_name="/infer")
+                res, _ = img_client.predict(handle_file(str(src)), prompt, 0, True, 2.5, 28, api_name="/infer")
                 _hf_copy(res, png)
-            if stage in ("all", "videos") and png.exists() and not mp4.exists():
+                print(f"[generate:hf] scene_{s.index:02d}: 키프레임 완료")
+            except Exception as e:
+                print(f"[generate:hf] scene_{s.index:02d} 키프레임 실패: {e}")
+                if quota_hit(str(e)):
+                    return
+
+    if stage in ("all", "videos"):
+        for s in todo:
+            png, mp4 = keyframe_path(ep, s), shots / f"scene_{s.index:02d}.mp4"
+            if mp4.exists() or not png.exists():
+                continue
+            h, w = _hf_dims(png)
+            try:
                 vid_client = vid_client or _hf_client(HF_VIDEO_SPACE)
-                res, _ = vid_client.predict(handle_file(str(png)), sc["video_prompt"], 6, HF_NEGATIVE, 3.5,
-                                            1, 1, 42, True, api_name="/generate_video")
+                res, _ = vid_client.predict(
+                    prompt=pack["scenes"][s.index]["video_prompt"], negative_prompt=HF_NEGATIVE,
+                    input_image_filepath=handle_file(str(png)), height_ui=h, width_ui=w,
+                    mode="image-to-video", duration_ui=3, randomize_seed=True, api_name="/image_to_video")
                 _hf_copy(res, mp4)
-            print(f"[generate:hf] scene_{i:02d}: {'mp4' if mp4.exists() else 'png' if png.exists() else '-'}")
-        except Exception as e:
-            msg = str(e)
-            print(f"[generate:hf] scene_{i:02d} 실패: {msg}")
-            if "quota" in msg.lower() or "limit" in msg.lower():
-                print("[generate:hf] 오늘 GPU 할당량 소진 → 24시간 뒤 같은 명령을 다시 실행하면 남은 컷부터 이어서 만듭니다.")
-                return
+                print(f"[generate:hf] scene_{s.index:02d}: 영상 완료")
+            except Exception as e:
+                print(f"[generate:hf] scene_{s.index:02d} 영상 실패: {e}")
+                if quota_hit(str(e)):
+                    return
 
 
 # ---------------------------------------------------------------- fal.ai (유료)

@@ -42,6 +42,11 @@ scenes:
     shot: wide
     move: push_in
     expression: sitting politely, looking at the camera, slightly nervous
+    base: scene_01
+    edit: >-
+      Replace the dog with a stern Korean male interviewer in his 40s with glasses and a grey suit,
+      sitting in the same chair and holding a resume, looking at the camera
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera"
 
   - speaker: baechu
     ko: 안녕하십니까! 지원자 배추입니다!
@@ -49,6 +54,7 @@ scenes:
     shot: medium
     move: punch
     expression: chest out, proud confident smile, tongue slightly out
+    video_prompt: "The poodle in a suit talks enthusiastically to the camera, mouth opening and closing as it speaks, proud and confident, static camera"
     sfx: pop
 
   - speaker: interviewer
@@ -57,6 +63,8 @@ scenes:
     shot: wide
     move: pan_right
     expression: listening seriously, head slightly tilted
+    reuse: scene_00
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera, raising an eyebrow"
 
   - speaker: baechu
     ko: 탕비실에 간식이 많다고 들었습니다.
@@ -64,6 +72,9 @@ scenes:
     shot: close
     move: push_in
     expression: very serious face, eyes sparkling
+    base: scene_01
+    edit: Change the dog's expression to very serious and determined, mouth closed, eyes wide and sparkling
+    video_prompt: "The serious poodle in a suit speaks to the camera, mouth moving as it talks, nodding slightly, static camera"
 
   - speaker: interviewer
     ko: ...본인의 장점은요?
@@ -71,6 +82,8 @@ scenes:
     shot: medium
     move: static
     expression: blinking innocently
+    reuse: scene_00
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera, looking down at the resume then up"
 
   - speaker: baechu
     ko: 냄새만 맡아도 간식 위치를 찾아냅니다.
@@ -78,6 +91,9 @@ scenes:
     shot: close
     move: pan_left
     expression: sniffing the air proudly, nose up
+    base: scene_01
+    edit: The dog lifts its nose up proudly and sniffs the air with its eyes half closed, looking smug
+    video_prompt: "The poodle in a suit sniffs the air proudly with its nose up, then talks, mouth moving, static camera"
 
   - speaker: interviewer
     ko: 그럼 단점은요?
@@ -85,6 +101,8 @@ scenes:
     shot: wide
     move: push_in
     expression: suddenly guilty look, eyes darting
+    reuse: scene_00
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera, leaning forward curiously"
 
   - speaker: baechu
     ko: 찾으면... 그 자리에서 다 먹습니다.
@@ -92,6 +110,8 @@ scenes:
     shot: extreme_close
     move: shake
     expression: dramatic close-up, guilty but honest face, tongue out
+    reuse: scene_01   # 편집본(scene_07)은 눈이 하얗게 깨져서 원본 키프레임 재사용
+    video_prompt: "The guilty poodle in a suit licks its lips and talks, eyes darting sideways, static camera"
     sfx: pop
 
   - speaker: interviewer
@@ -100,6 +120,8 @@ scenes:
     shot: medium
     move: pull_out
     expression: sitting up straight, businesslike
+    reuse: scene_00
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera, businesslike"
 
   - speaker: baechu
     ko: 연봉 대신 간식으로 주십시오. 하루 세 번이면 됩니다.
@@ -107,6 +129,8 @@ scenes:
     shot: close
     move: push_in
     expression: nodding firmly like a negotiator
+    reuse: scene_03
+    video_prompt: "The serious poodle in a suit negotiates, talking to the camera with its mouth moving, nodding firmly, static camera"
 
   - speaker: interviewer
     ko: 마지막으로 하고 싶은 말 있나요?
@@ -114,6 +138,8 @@ scenes:
     shot: wide
     move: static
     expression: excited, tail wagging
+    reuse: scene_00
+    video_prompt: "The interviewer speaks to the camera, mouth moving naturally, slight head nod, static camera, softening with a small smile"
 
   - speaker: baechu
     ko: 합격하면... 지금 산책 가도 됩니까?
@@ -121,6 +147,8 @@ scenes:
     shot: extreme_close
     move: punch
     expression: pleading puppy eyes, tongue out, super cute
+    reuse: scene_01   # 편집 결과가 다른 강아지처럼 바뀌어서 원본 키프레임 재사용
+    video_prompt: "The poodle in a suit tilts its head with pleading puppy eyes and speaks, mouth moving, static camera"
 
   - speaker: interviewer
     ko: ...합격입니다.
@@ -128,6 +156,8 @@ scenes:
     shot: wide
     move: pull_out
     expression: happy open-mouth smile, celebrating
+    reuse: scene_01
+    video_prompt: "The overjoyed poodle in a suit celebrates, bouncing happily with paws in the air, static camera"
     stamp: 합격
     sfx: pop
     hold: 1.4
